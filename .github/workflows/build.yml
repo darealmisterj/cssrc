@@ -1,0 +1,31 @@
+name: Build Windows Executable
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup CMake
+      uses: microsoft/setup-msbuild@v1.1
+    
+    - name: Configure CMake
+      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=Release
+      
+    - name: Build
+      run: cmake --build ${{github.workspace}}/build --config Release
+      
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: windows-executable
+        path: ${{github.workspace}}/build/Release/*.exe
+        if-no-files-found: error
+
